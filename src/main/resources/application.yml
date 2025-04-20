@@ -1,0 +1,44 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        - RemoveRequestHeader=Cookie
+      routes:
+        - id: auth-security-service
+          uri: http://auth-security-service:8080
+          predicates:
+            - Path=/auth/**
+
+        - id: customer-service
+          uri: http://customer-service:8080
+          predicates:
+            - Path=/api/customers/**, /internal/customers/**
+          filters:
+            - name: AuthenticationFilter
+
+        - id: farmer-service
+          uri: http://farmer-service:8080
+          predicates:
+            - Path=/api/farmers/**, /internal/farmers/**
+          filters:
+            - name: AuthenticationFilter
+
+        - id: order-service
+          uri: http://order-service:8080
+          predicates:
+            - Path=/api/orders/**, /internal/orders/**
+          filters:
+            - name: AuthenticationFilter
+
+        - id: surprise-bag-service
+          uri: http://surprise-bag-service:8080
+          predicates:
+            - Path=/api/surprise_bag/**, /internal/surprise-bag/**
+          filters:
+            - name: AuthenticationFilter
